@@ -1,41 +1,71 @@
-import type { Request, Response } from "express";
+import type { Request, Response} from 'express';
+
 
 export class Session {
     user?: any;
     token?: string;
-    expiresAt: Date;
+    readonly expiresAt: Date;
+    [key: string]: any;
 
-    constructor(expiresAt: Date, user?: any, token?: string) {
+    constructor({expiresAt, user, token, ...rest}: {expiresAt: Date, user?: any, token?: string, [key: string]: any}) {
         this.user = user;
         this.token = token;
         this.expiresAt = expiresAt;
+        Object.assign(this, rest);
     }
 
     get isExpired() {
         return this.expiresAt ? this.expiresAt.getTime() < Date.now() : true;
     }
 
-    static fromCookie(data:string){
-        return Session.fromJSON(atob(data));
+    get isAuthenticated() {
+        return !!this.user;
     }
 
-    static toCookie(session: Session) {
-        return btoa(JSON.stringify(session));
+    static injectPersistence(req: Request, res:Response){
+        // @ts-ignore
+        if (res.modified) return;
+        if (!req.session) return;
+
+        // @ts-ignore
+        const originalEnd = res.end.bind(res);
+        // @ts-ignore
+        res.end = (...rest)=>{
+            res.cookie("session", req.session?.toCookie(), {
+                expires: req.session?.expiresAt,
+                httpOnly: true
+            });
+        // @ts-ignore
+        originalEnd(...rest);
+        }
+        // @ts-ignore
+        res.modified = true;
     }
 
-    static fromJSON(data: string) {
-        const { user, token, expiresAt } = JSON.parse(data);
-        return new Session(new Date(expiresAt), user, token);
+    static fromCookie(cookie:string){
+        const data = JSON.parse(atob(cookie)); // decode cookie using jwt before
+        if (data.user_id){
+            data.user = {id: data.user_id}; // fetch from database
+            delete data.user_id;
+        }
+        const date = new Date(data.expiresAt);
+        delete data.expiresAt;
+        data.date = date;
+        data.token = cookie;
+
+        return new Session(data);
+    }
+    
+    toCookie(){
+        const data = {
+            ...this
+        }
+        if (data.user){
+            data.user_id = data.user.id;
+            delete data.user;
+        }
+        delete data.token;
+        // Tokenify data using jwt before
+        return btoa(JSON.stringify(data));
     }
 }
-
-export function updateSession(req:Request, res: Response){
-    if (req.session){
-        res.cookie("session", Session.toCookie(req.session), {
-            expires: req.session.expiresAt,
-            httpOnly: true
-        });
-    }
-}
-
-export type SessionType = typeof Session;

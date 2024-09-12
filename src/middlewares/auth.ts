@@ -3,14 +3,19 @@ import { Session } from '../lib/session';
 
 
 export function injectSession(req: Request, res: Response, next: NextFunction) {
+  function threeDaysLater(){
+    const date = new Date();
+    date.setDate(date.getDate() + 3);
+    return date;
+  }
+
   const encodedSession = req.cookies?.session;
   if (encodedSession){
     req.session = Session.fromCookie(encodedSession);
   } else {
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 3);
-    req.session = new Session(expiresAt);
+    req.session = new Session({expiresAt: threeDaysLater()});
   }
+  Session.injectPersistence(req, res);
   next();
 }
 
