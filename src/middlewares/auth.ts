@@ -23,7 +23,7 @@ export function redirectIfAuthenticated(
   res: Response,
   next: NextFunction
 ) {
-  if (req.session?.isAuthenticated) {
+  if (req.session?.isAuthenticated && !req.session.isExpired) {
     return res.redirect("/");
   }
   next();
