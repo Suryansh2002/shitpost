@@ -10,10 +10,9 @@
         <% ` %>
     <% } %>
     <div class="bg-neutral-900 border-[1.5px] border-zinc-300 rounded-lg p-4 sm:max-w-[30%] max-w-[90%]" <%-htmxAttributes%>>
-        <h1 class="text-xl my-1"><%= post.title %></h1>
+        <h1 class="text-xl my-2"><%= post.title %></h1>
         <hr class="w-full">
-        <p class="my-3 break-words max-w-[90%]">
-        <hr class="w-full"><%= post.content %></p>
+        <p class="my-3 break-words max-w-[90%]"><%= post.content %></p>
         <img src="<%= post.imageUrl %>" alt="<%= post.title %>" class="my-1 rounded-lg max-w-full min-w-[70%] max-h-96 object-fit">
         <!-- <div class="w-full h-10 flex justify-around items-end mt-4">
             <button class="text-3xl rounded-full hover:bg-zinc-700 p-1">👍</button>

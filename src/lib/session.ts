@@ -31,12 +31,9 @@ export class Session {
         const originalEnd = res.end.bind(res);
         // @ts-ignore
         res.end = (...rest)=>{
-            res.cookie("session", req.session?.toCookie(), {
-                expires: req.session?.expiresAt,
-                httpOnly: true
-            });
-        // @ts-ignore
-        originalEnd(...rest);
+            req.session?.updateSession(res);
+            // @ts-ignore
+            originalEnd(...rest);
         }
         // @ts-ignore
         res.modified = true;
@@ -54,6 +51,13 @@ export class Session {
         data.token = cookie;
 
         return new Session(data);
+    }
+
+    updateSession(res: Response){
+        res.cookie("session", this.toCookie(), {
+            expires: this.expiresAt,
+            httpOnly: true
+        });
     }
     
     toCookie(){
