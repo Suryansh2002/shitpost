@@ -29,6 +29,7 @@ export class Session {
   }
 
   get isAuthenticated() {
+    if (this.isExpired) return false;
     return !!this.user;
   }
 
