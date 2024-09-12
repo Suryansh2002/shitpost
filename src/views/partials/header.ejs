@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shit Post</title>
     <link rel="stylesheet" href="static/css/style.css">
-    <script src="static/js/htmx.min.js" async></script>
+    <script src="static/js/htmx.min.js"></script>
 </head>
+<style>
+    .htmx-indicator{
+        display: none;
+    }
+    .htmx-indicator .htmx-request{
+        display: block;
+    }
+    .htmx-request .htmx-indicator{
+        display: block;
+    }
+</style>
 <body class="w-screen overflow-x-hidden bg-black text-white">

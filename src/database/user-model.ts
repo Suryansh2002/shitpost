@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import type { InferSchemaType } from "mongoose";
+import type { Document } from "mongoose";
 
 const userSchema = new mongoose.Schema({
     email: {type: String, unique: true},
@@ -7,5 +9,5 @@ const userSchema = new mongoose.Schema({
     banned: {type:Boolean, default:false},
 });
 
-const userModel = mongoose.model("User", userSchema);
-export default userModel;
+export const userModel = mongoose.model("User", userSchema);
+export type UserDocument = Document<unknown,{},InferSchemaType<typeof userSchema>>;

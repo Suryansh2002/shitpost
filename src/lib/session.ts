@@ -1,9 +1,10 @@
 import type { Request, Response } from "express";
+import type { UserDocument } from "../database/user-model";
 
 export class Session {
-  user?: any;
+  user?: UserDocument;
   token?: string;
-  readonly expiresAt: Date;
+  expiresAt: Date;
   [key: string]: any;
 
   constructor({
@@ -35,12 +36,11 @@ export class Session {
     // @ts-ignore
     if (res.modified) return;
     if (!req.session) return;
-
-    // @ts-ignore
+    
     const originalEnd = res.end.bind(res);
     // @ts-ignore
     res.end = (...rest) => {
-      req.session?.updateSession(res);
+      req.session?.update(res);
       // @ts-ignore
       originalEnd(...rest);
     };
@@ -56,17 +56,22 @@ export class Session {
     }
     const date = new Date(data.expiresAt);
     delete data.expiresAt;
-    data.date = date;
+    data.expiresAt = date;
     data.token = cookie;
 
     return new Session(data);
   }
 
-  updateSession(res: Response) {
+  refresh(){
+    this.expiresAt = new Date();
+    this.expiresAt.setDate(this.expiresAt.getDate() + 3);
+  }
+
+  update(res: Response) {
     res.cookie("session", this.toCookie(), {
       expires: this.expiresAt,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
     });
   }
 

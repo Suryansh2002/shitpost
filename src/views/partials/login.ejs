@@ -1,1 +1,31 @@
-<h1>Login</h1>
+<style>
+    .htmx-request #login-text{
+        display: none;
+    }
+</style>
+<div class="h-screen w-full flex items-center justify-center" id="formHolder">
+    <main class="lg:w-1/3 w-2/3 bg-gray-900 rounded-xl p-4">
+        <h1 class="text-5xl font-semibold text-center py-6 text-zinc-100">Login</h1>
+        <form id="loginform" class="px-6" hx-post="/api/user/login" hx-swap="none">
+            <div class="my-5">
+                <label for="username" class="font-semibold text-sm">Username</label>
+                <input name="username" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2" >
+            </div>
+            <div class="my-5">
+                <label for="password" class="font-semibold text-sm">Password</label>
+                <input name="password" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
+            </div>
+            <div class="flex justify-center my-7">
+                <button type="submit" class="rounded-lg bg-blue-600 hover:bg-blue-700 transition-[background-color] duration-500 md:px-24 px-12 py-2 font-semibold text-sm">
+                    <span id="login-text">Login</span>
+                    <span class="htmx-indicator"><%- include('../components/spinner', {size:30}) %></span>
+                </button>
+            </div>
+        </form>
+        <div class="text-center">
+            <button class="text-sm text-blue-400 my-4 hover:text-blue-500" hx-get="/signup" hx-target="body" type="submit">
+                Don't have an account? Register
+            </button>
+        </div>
+    </main>
+</div>

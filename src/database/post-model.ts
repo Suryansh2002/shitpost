@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import type { InferSchemaType } from "mongoose";
+import type { Document } from "mongoose";
 
 const postSchema = new mongoose.Schema({
     title: String,
@@ -18,5 +20,5 @@ postSchema.pre("validate", function(next){
     next();
 })
 
-const postModel = mongoose.model("Post", postSchema);
-export default postModel;
+export const postModel = mongoose.model("Post", postSchema);
+export type PostDocument = Document<unknown,{},InferSchemaType<typeof postSchema>>;

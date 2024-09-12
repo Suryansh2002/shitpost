@@ -14,12 +14,12 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/new", async (req, res) => {
-  if (req.session){
-    res.render("new-post");
+router.get("/new", (req, res) => {
+  if (req.session?.isAuthenticated){
+    res.render("partials/new-post");
   } else {
     res.set("Hx-Push-Url", "/login");
-    res.render("login");
+    res.render("partials/login");
   }
 });
 
