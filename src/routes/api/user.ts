@@ -10,7 +10,6 @@ router.post("/register", redirectIfAuthenticated, (req, res) => {
 });
 
 router.post("/login", redirectIfAuthenticated, async (req, res) => {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
   if (!req.session){
     return res.status(401).send("Session is not available");
   }
