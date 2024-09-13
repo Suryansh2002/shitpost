@@ -18,7 +18,7 @@ export class Session {
     user?: any;
     token?: string;
     [key: string]: any;
-  }) {
+  } = {}) {
     this.user = user;
     this.token = token;
     this.expiresAt = this.getExpiresAt(expiresAt);

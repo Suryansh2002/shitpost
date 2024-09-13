@@ -1,7 +1,10 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { userModel } from "../../models/user";
-import { redirectIfAuthenticated, redirectIfNotAuthenticated } from "../../middlewares/auth";
+import {
+  redirectIfAuthenticated,
+  redirectIfNotAuthenticated,
+} from "../../middlewares/auth";
 
 const router = express.Router();
 
@@ -10,12 +13,12 @@ router.post("/register", redirectIfAuthenticated, (req, res) => {
 });
 
 router.post("/login", redirectIfAuthenticated, async (req, res) => {
-  if (!req.session){
-    return res.status(401).send("Session is not available");
-  }
-  const { username, password }:{username:string, password:string} = req.body;
+  const { username, password } = req.body as {
+    username: string;
+    password: string;
+  };
 
-  const user = await userModel.findOne({username});
+  const user = await userModel.findOne({ username });
 
   if (!user) {
     return res.status(401).send("Invalid username");
@@ -34,11 +37,9 @@ router.post("/login", redirectIfAuthenticated, async (req, res) => {
   res.json({ message: "Logged in successfully" });
 });
 
-
 router.post("/logout", redirectIfNotAuthenticated, (req, res) => {
   req.session?.invalidate();
   res.json({ message: "Logged out successfully" });
 });
-
 
 export { router as authApiRouter };

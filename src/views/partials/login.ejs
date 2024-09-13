@@ -6,7 +6,7 @@
 <div class="h-screen w-full flex items-center justify-center" id="formHolder">
     <main class="lg:w-1/3 w-2/3 bg-gray-900 rounded-xl p-4">
         <h1 class="text-5xl font-semibold text-center py-6 text-zinc-100">Login</h1>
-        <form id="loginform" class="px-6" hx-post="/api/user/login" hx-swap="none">
+        <form id="loginform" class="px-6" hx-post="/api/auth/login" hx-swap="none">
             <div class="my-5">
                 <label for="username" class="font-semibold text-sm">Username</label>
                 <input name="username" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2" >
