@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import router from "./routes";
-import connectDb from "./database";
+import connectDb from "./config/mongo";
 import cookieParser from "cookie-parser";
 
 const app = express();

@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
-import type { UserDocument } from "../database/user-model";
+import type { UserDocument } from "../models/user";
 
 export class Session {
   user?: UserDocument;
   token?: string;
   expiresAt: Date;
   [key: string]: any;
+  private invalidated: boolean = false;
 
   constructor({
     expiresAt,
@@ -13,31 +14,46 @@ export class Session {
     token,
     ...rest
   }: {
-    expiresAt: Date;
+    expiresAt?: Date;
     user?: any;
     token?: string;
     [key: string]: any;
   }) {
     this.user = user;
     this.token = token;
-    this.expiresAt = expiresAt;
+    this.expiresAt = this.getExpiresAt(expiresAt);
     Object.assign(this, rest);
   }
 
+  private getExpiresAt(expiresAt?: Date) {
+    if (expiresAt) return expiresAt;
+    const date = new Date();
+    date.setDate(date.getDate() + 3);
+    return date;
+  }
+
   get isExpired() {
-    return this.expiresAt ? this.expiresAt.getTime() < Date.now() : true;
+    return new Date() > this.expiresAt;
+  }
+
+  get isInvalidated() {
+    return this.invalidated;
   }
 
   get isAuthenticated() {
+    if (this.isInvalidated) return false;
     if (this.isExpired) return false;
     return !!this.user;
   }
 
   static injectPersistence(req: Request, res: Response) {
+    // I am not sure if we should automatically update the session cookie or manually update it,
+    // This function currently automatically updates the session cookie on every response.
+
     // @ts-ignore
     if (res.modified) return;
     if (!req.session) return;
-    
+
     const originalEnd = res.end.bind(res);
     // @ts-ignore
     res.end = (...rest) => {
@@ -63,12 +79,10 @@ export class Session {
     return new Session(data);
   }
 
-  refresh(){
-    this.expiresAt = new Date();
-    this.expiresAt.setDate(this.expiresAt.getDate() + 3);
-  }
-
-  update(res: Response) {
+  private update(res: Response) {
+    if (this.invalidated) {
+      return res.clearCookie("session");
+    }
     res.cookie("session", this.toCookie(), {
       expires: this.expiresAt,
       httpOnly: true,
@@ -87,5 +101,13 @@ export class Session {
     delete data.token;
     // Tokenify data using jwt before
     return btoa(JSON.stringify(data));
+  }
+
+  refresh() {
+    this.expiresAt = this.getExpiresAt();
+  }
+
+  invalidate() {
+    this.invalidated = true;
   }
 }

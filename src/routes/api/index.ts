@@ -1,7 +1,7 @@
 import express from 'express';
-import { userApiRouter } from './user';
+import { authApiRouter } from './auth';
 
 const router = express.Router();
 
-router.use('/user', userApiRouter);
+router.use('/auth', authApiRouter);
 export { router as apiRouter };

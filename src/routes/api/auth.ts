@@ -1,7 +1,7 @@
 import express from "express";
-import { redirectIfAuthenticated, redirectIfNotAuthenticated } from "../../middlewares/auth";
-import { userModel } from "../../database/user-model";
 import bcrypt from "bcrypt";
+import { userModel } from "../../models/user";
+import { redirectIfAuthenticated, redirectIfNotAuthenticated } from "../../middlewares/auth";
 
 const router = express.Router();
 
@@ -31,16 +31,14 @@ router.post("/login", redirectIfAuthenticated, async (req, res) => {
     req.session.user = user;
     req.session.refresh();
   }
-
   res.json({ message: "Logged in successfully" });
 });
 
 
 router.post("/logout", redirectIfNotAuthenticated, (req, res) => {
-  req.session = undefined;
-  res.clearCookie("session");
+  req.session?.invalidate();
   res.json({ message: "Logged out successfully" });
 });
 
 
-export { router as userApiRouter };
+export { router as authApiRouter };

@@ -17,23 +17,3 @@ post/[id] page with comments
 
 
 
-Session {
-    token -> auth
-}
-
-String -> Base64 -> stored in cookie
-
-
-
-# register 
-  - userId 
-  Jwt token
-
-# Session {
-    token: jwt token
-    user? : User
-    expiresAt: Date
-}
-
-# Cookie Based ->
-   1 Base64 encode => Cookie

@@ -3,7 +3,6 @@ import { postRouter } from "./posts";
 import { apiRouter } from "./api";
 import { getPosts } from "../lib/mock-data";
 import { injectSession, redirectIfAuthenticated } from "../middlewares/auth";
-import { Session } from "../lib/session";
 
 const router = express.Router();
 router.use(injectSession);
@@ -24,7 +23,7 @@ router.get("/signup", redirectIfAuthenticated, (req, res) => {
   if (req.headers["hx-request"]){
     res.render("partials/signup");
   } else {
-    res.render("signup");
+    res.redirect("/login");
   }
 });
 
