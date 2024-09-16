@@ -1,1 +1,90 @@
-<h1>New Post</h1>
+<%- include('../components/navbar', {
+    toggle: {
+        link: "/posts/my-posts",
+        label: "My Posts"
+    }
+}) %>
+
+<main class="mt-28 w-full flex items-center justify-center text-white" id="main">
+    <script>
+        function getElements(){
+            return {
+                imagePreview: document.getElementById('imagePreview'),
+                imageDiv: document.getElementById('imagediv'),
+                uploadText: document.getElementById('uploadText'),
+                closeButton: document.getElementById('closeButton'),
+                image: document.getElementById('image')
+            }
+        }
+    
+        function removeImage(){
+            const {imagePreview, imageDiv, uploadText, closeButton, image} = getElements();
+            image.value = "";
+            imagePreview.src = "";
+            imagePreview.classList.add("hidden");
+            uploadText.classList.remove("hidden");
+            imageDiv.classList.remove("border-blue-500");
+            closeButton.classList.add("hidden");
+        }
+    
+        function onImageUpload(event){
+            const {imagePreview, imageDiv, uploadText, closeButton} = getElements();
+            const file = event.target.files[0];
+            if (!file){
+                imagePreview.src = "";
+                imagePreview.classList.add("hidden");
+                uploadText.classList.remove("hidden");
+                imageDiv.classList.remove("border-blue-500"); 
+                return
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (event)=>{
+                imagePreview.src = event.target.result;
+                uploadText.classList.add("hidden");
+                imagePreview.classList.remove("hidden");
+                closeButton.classList.remove("hidden");
+                imageDiv.classList.add("border-blue-500");
+            }
+            reader.readAsDataURL(file);
+        }
+    </script>
+    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6">Submit Form</h2>
+        <form hx-post="/api/posts/create" enctype="multipart/form-data" hx-swap="none">
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-300 mb-1">Title</label>
+                <input type="text" id="title" name="title" required
+                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500 focus:border-2">
+            </div>
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-300 mb-1">Description (optional)</label>
+                <textarea id="description" name="description" rows="3"
+                          class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500 focus:border-2"></textarea>
+            </div>
+            <div class="mb-6">
+                <label for="image" class="block text-sm font-medium text-gray-300 mb-1">Image (optional)</label>
+                <div id="imagediv" class="w-full min-h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center relative hover:border-blue-500 overflow-hidden">
+                    <button type="button" id="closeButton" height="20" width="20" 
+                        onclick="removeImage()"
+                        class="z-10 right-0 top-0 absolute px-1 hover:text-red-500 hidden">✕</button>
+                    <img src="" alt="previewImage" class="hidden" id="imagePreview">
+                    <div id="uploadText" class="flex flex-col items-center">
+                        <span class="text-gray-200">Upload Image</span>
+                        <p class="text-gray-300 text-sm">
+                            Max size: 5MB
+                        </p>
+                    </div>
+                    <input type="file" id="image" name="image" accept="image/*" class="absolute w-full h-full opacity-0 cursor-pointer"
+                            onchange="onImageUpload(event)"
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500 focus:border-2 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600">
+                </div>
+            </div>
+            
+            <button type="submit"
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300">
+                Submit
+            </button>
+        </form>
+    </div>
+</main>

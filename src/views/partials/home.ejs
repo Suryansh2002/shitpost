@@ -1,0 +1,28 @@
+<script>
+    /** @type {number[]} */
+    var postIds = JSON.parse(`<%- postIds %>`);
+    function newPostConfig(event) {
+        event.detail.headers.postIds = JSON.stringify(postIds);
+    }
+
+    function newPostHandler(event){
+        postIds.push(
+            ...JSON.parse(event.detail.xhr.getResponseHeader('postIds'))
+        );
+    }
+</script>
+<nav class="w-full lg:px-20 px-6 py-2">
+    <div class="bg-gray-950 border-2 border-gray-700 py-5 px-6 md:px-10 font-sans rounded-3xl flex md:justify-between md:flex-row flex-col items-center gap-2">
+        <h1 class="md:text-3xl text-2xl font-medium">Welcome to Shit Post</h1>
+        <p class="md:text-xl text-base my-2 text-zinc-200 flex justify-center">
+            A place to post memes and share your thoughts !
+        </p>
+    </div>
+</nav>
+<hr class="my-4">
+<main class="w-full lg:px-20 px-4 py-2">
+    <div class="flex flex-wrap gap-4 justify-center" id="posts">
+        <%- include("../components/posts", {posts: posts}) %>
+    </div>
+    <%- include("../components/add-button") %>
+</main>

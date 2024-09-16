@@ -1,14 +1,22 @@
 import express from "express";
 import { postRouter } from "./posts";
 import { apiRouter } from "./api";
-import { getPosts } from "../lib/mock-data";
 import { injectSession, redirectIfAuthenticated } from "../middlewares/auth";
+import { findWithoutDuplicates } from "../models/post";
+import { userModel } from "../models/user";
 
 const router = express.Router();
 router.use(injectSession);
 
-router.get("/", (req, res) => {
-  res.render("home", {posts: JSON.stringify(getPosts().slice(0, 20))});
+router.get("/", async (req, res) => {
+  if (req.session){
+    req.session.user = await userModel.findOne({"username": "test"});
+  }
+  const posts = await findWithoutDuplicates([]);
+  res.render("home", {
+    posts: posts,
+    postIds: JSON.stringify(posts.map((post) => post._id)),
+  });
 });
 
 router.get("/login", redirectIfAuthenticated, (req, res) => {
@@ -31,5 +39,3 @@ router.use("/posts", postRouter);
 router.use("/api", apiRouter);
 
 export default router;
-
-// Htmx, ejs, express, typescript, bun, s3

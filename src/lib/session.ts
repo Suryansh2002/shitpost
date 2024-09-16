@@ -1,26 +1,28 @@
 import type { Request, Response } from "express";
-import type { UserDocument } from "../models/user";
+import { userModel, type UserDocument } from "../models/user";
 
 export class Session {
-  user?: UserDocument;
+  user?: UserDocument | null;
   token?: string;
   expiresAt: Date;
-  [key: string]: any;
+  private lastUploadAt?: Date;
   private invalidated: boolean = false;
 
   constructor({
     expiresAt,
     user,
     token,
+    lastUploadAt,
     ...rest
   }: {
     expiresAt?: Date;
     user?: any;
     token?: string;
-    [key: string]: any;
+    lastUploadAt?: Date;
   } = {}) {
     this.user = user;
     this.token = token;
+    this.lastUploadAt = lastUploadAt;
     this.expiresAt = this.getExpiresAt(expiresAt);
     Object.assign(this, rest);
   }
@@ -46,6 +48,14 @@ export class Session {
     return !!this.user;
   }
 
+  get lastUploaded() {
+    return this.lastUploadAt || new Date(0);
+  }
+
+  set lastUploaded(date: Date) {
+    this.lastUploadAt = date;
+  }
+
   static injectPersistence(req: Request, res: Response) {
     // I am not sure if we should automatically update the session cookie or manually update it,
     // This function currently automatically updates the session cookie on every response.
@@ -65,14 +75,19 @@ export class Session {
     res.modified = true;
   }
 
-  static fromCookie(cookie: string) {
+  static async fromCookie(cookie: string) {
     const data = JSON.parse(atob(cookie)); // decode cookie using jwt before
     if (data.user_id) {
-      data.user = { id: data.user_id }; // fetch from database
+      data.user = await userModel.findById(data.user_id);
       delete data.user_id;
     }
+
     const date = new Date(data.expiresAt);
     delete data.expiresAt;
+    const lastUploadAt = data?.lastUploadAt ? new Date(data.lastUploadAt) : undefined;
+    delete data.lastUploadAt;
+
+    data.lastUploadAt = lastUploadAt;
     data.expiresAt = date;
     data.token = cookie;
 
@@ -93,7 +108,7 @@ export class Session {
   toCookie() {
     const data = {
       ...this,
-    };
+    } as { [key: string]: any };
     if (data.user) {
       data.user_id = data.user.id;
       delete data.user;

@@ -1,0 +1,23 @@
+<%- include('../components/navbar', {
+    toggle: {
+        link: "/posts/new",
+        label: "New Post"
+    }
+}) %>
+
+<script>
+    /** @type {number[]} */
+    var postIds = JSON.parse(`<%- postIds %>`);
+    function newPostConfig(event) {
+        event.detail.headers.postIds = JSON.stringify(postIds);
+    }
+
+    function newPostHandler(event){
+        postIds.push(
+            ...JSON.parse(event.detail.xhr.getResponseHeader('postIds'))
+        );
+    }
+</script>
+<main class="flex flex-wrap gap-4 justify-center" id="posts">
+    <%- include("../components/posts", {posts: posts}) %>
+</main>

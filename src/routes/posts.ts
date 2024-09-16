@@ -1,28 +1,38 @@
 import express from "express";
-import { getPosts } from "../lib/mock-data";
+import { findWithoutDuplicates, postModel } from "../models/post";
+import { redirectIfNotAuthenticated } from "../middlewares/auth";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const postIds = JSON.parse(req.headers.postids as string || "[]") as string[];
-  if (!postIds){
-    return res.send("No postIds provided").status(400);
+router.get("/more", async (req, res) => {
+  const stringIds = JSON.parse(req.headers.postids as string || "[]") as string[];
+  if (stringIds.length<1){
+    res.set("postIds", "[]");
+    return res.render("components/posts", { posts: []});
   }
-  const newPosts = getPosts().filter((post) => !postIds?.includes(post.id)).slice(0,20);
-  res.set("postIds", JSON.stringify(newPosts.map((post) => post.id)));
-  res.render("components/posts", { posts: newPosts});
+  const posts = await findWithoutDuplicates(stringIds);
+  res.set("postIds", JSON.stringify(posts.map((post) => post._id)));
+  res.render("components/posts", { posts: posts});
 });
 
+
+router.get("/my-posts", redirectIfNotAuthenticated, async (req, res) => {
+  if (!req.headers["hx-request"]){
+    return res.render("my-posts");
+  }
+  if (!req.session?.user){
+    return res.status(401).json({message: "Unauthorized"});
+  }
+  const posts = await postModel.find({ user: req.session.user.id });
+  res.render("partials/my-posts", {posts: posts, postIds: JSON.stringify(posts.map((post) => post._id))});
+});
 
 router.get("/new", (req, res) => {
-  if (req.session?.isAuthenticated){
-    res.render("partials/new-post");
-  } else {
-    res.set("Hx-Push-Url", "/login");
-    res.render("partials/login");
+  if (!req.headers["hx-request"]){
+    return res.render("new-post");
   }
+  return res.render("partials/new-post");
 });
-
 
 
 export { router as postRouter };
