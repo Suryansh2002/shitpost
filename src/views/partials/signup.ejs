@@ -1,30 +1,33 @@
-<style>
-    .htmx-request #login-text{
-        display: none;
-    }
-</style>
-<div class="h-screen w-full flex items-center justify-center" id="formHolder">
+<div class="h-screen w-full flex items-center justify-center" id="formholder">
+    <style>
+        .htmx-request #signup-text{
+            display: none;
+        }
+    </style>
     <main class="lg:w-1/3 w-2/3 bg-gray-900 rounded-xl p-4">
         <h1 class="text-5xl font-semibold text-center py-6 text-zinc-100">Sign Up</h1>
-        <form id="signupform" class="px-6">
+        <form id="signupform" class="px-6" hx-post="/api/auth/signup" hx-swap="none">
             <div class="my-5">
                 <label for="email" class="font-semibold text-sm">Email</label>
-                <input name="email" class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
+                <input name="email" type="email" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
             </div>
             <div class="my-5">
                 <label for="username" class="font-semibold text-sm">Username</label>
-                <input name="username" class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
+                <input name="username" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
             </div>
             <div class="my-5">
                 <label for="password" class="font-semibold text-sm">Password</label>
-                <input name="password" class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
+                <input name="password" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
             </div>
             <div class="flex justify-center my-7">
-                <button type="submit" class="rounded-lg bg-blue-600 hover:bg-blue-700 transition-[background-color] duration-500 md:px-24 px-12 py-2 font-semibold text-sm">Sign up</button>
+                <button type="submit" class="rounded-lg bg-blue-600 hover:bg-blue-700 transition-[background-color] duration-500 md:px-24 px-12 py-2 font-semibold text-sm">
+                    <span id="singup-text">Login</span>
+                    <span class="htmx-indicator"><%- include('../components/ui/loading', {size:25}) %></span>
+                </button>
             </div>
         </form>
         <div class="text-center">
-            <button class="text-sm text-blue-400 my-4 hover:text-blue-500" hx-get="/login" hx-target="body" type="submit">
+            <button class="text-sm text-blue-400 my-4 hover:text-blue-500" hx-get="/login" hx-target="#formholder" hx-swap="outerHTML" type="button">
                 Already have an account? Login
             </button>
         </div>

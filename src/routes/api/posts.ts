@@ -16,7 +16,20 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({ storage: storage });
+const fileFilter = (req: express.Request, file:Express.Multer.File, cb:multer.FileFilterCallback) => {
+    const allowedTypes = /jpeg|jpg|png|gif/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+        return cb(null, true);
+    } else {
+        cb(new Error("Only images are allowed"));
+    }
+};
+
+
+const upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 5 }, fileFilter:fileFilter});
 
 router.post("/create", redirectIfNotAuthenticated, checkPostCooldown ,upload.single("image"), async(req, res) => {
     if (!req.session?.user){
@@ -26,8 +39,8 @@ router.post("/create", redirectIfNotAuthenticated, checkPostCooldown ,upload.sin
     const { title, description } = req.body;
     const imageName = req.file?.filename;
 
-    await postModel.create({title: title, content: description, ip: ip, user: req.session.user.id, imageUrl: '/uploads/' + imageName});
-    res.status(201).send();
+    await postModel.create({title: title, content: description, ip: ip, user: req.session.user._id, imageUrl: '/uploads/' + imageName});
+    res.render("components/toast", {message: "Post created successfully"});
 });
 
 export { router as postsApiRouter };

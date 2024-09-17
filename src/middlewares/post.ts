@@ -4,12 +4,16 @@ export function checkPostCooldown(req:Request, res:Response, next:NextFunction){
     if (!req.session?.user){
         return next();
     }
-    const lastUploaded = req.session.lastUploaded;
-    
+    const lastUploaded = req.session.user.lastUploaded;
     const diff = new Date().getTime() - lastUploaded.getTime();
     if (diff < 3*60*1000){
-        return res.status(429).json({message: "You are uploading too fast"});
+        return res.status(201).render("components/toast", {
+            message: "You can only post once every 3 minutes",
+            type: "failed",
+        });
     }
-    req.session
+    req.session.user.lastUploaded = new Date();
+    // @ts-ignore
+    req.session.user.save();
     next();
 }

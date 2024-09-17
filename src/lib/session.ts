@@ -1,30 +1,25 @@
 import type { Request, Response } from "express";
 import { userModel, type UserDocument } from "../models/user";
+import { generateToken, decodeToken } from "./jwt";
 
 export class Session {
   user?: UserDocument | null;
   token?: string;
-  expiresAt: Date;
-  private lastUploadAt?: Date;
+  exp: Date;
   private invalidated: boolean = false;
 
   constructor({
-    expiresAt,
+    expiresAt: exp,
     user,
     token,
-    lastUploadAt,
-    ...rest
   }: {
     expiresAt?: Date;
     user?: any;
     token?: string;
-    lastUploadAt?: Date;
   } = {}) {
     this.user = user;
     this.token = token;
-    this.lastUploadAt = lastUploadAt;
-    this.expiresAt = this.getExpiresAt(expiresAt);
-    Object.assign(this, rest);
+    this.exp = this.getExpiresAt(exp);
   }
 
   private getExpiresAt(expiresAt?: Date) {
@@ -35,7 +30,7 @@ export class Session {
   }
 
   get isExpired() {
-    return new Date() > this.expiresAt;
+    return new Date() > this.exp;
   }
 
   get isInvalidated() {
@@ -46,14 +41,6 @@ export class Session {
     if (this.isInvalidated) return false;
     if (this.isExpired) return false;
     return !!this.user;
-  }
-
-  get lastUploaded() {
-    return this.lastUploadAt || new Date(0);
-  }
-
-  set lastUploaded(date: Date) {
-    this.lastUploadAt = date;
   }
 
   static injectPersistence(req: Request, res: Response) {
@@ -76,19 +63,18 @@ export class Session {
   }
 
   static async fromCookie(cookie: string) {
-    const data = JSON.parse(atob(cookie)); // decode cookie using jwt before
+    const data = decodeToken(cookie);
+    if (!data) return new Session();
+    
     if (data.user_id) {
       data.user = await userModel.findById(data.user_id);
       delete data.user_id;
     }
 
-    const date = new Date(data.expiresAt);
-    delete data.expiresAt;
-    const lastUploadAt = data?.lastUploadAt ? new Date(data.lastUploadAt) : undefined;
-    delete data.lastUploadAt;
+    const date = new Date(data.exp);
+    delete data.exp;
 
-    data.lastUploadAt = lastUploadAt;
-    data.expiresAt = date;
+    data.exp = date;
     data.token = cookie;
 
     return new Session(data);
@@ -99,7 +85,7 @@ export class Session {
       return res.clearCookie("session");
     }
     res.cookie("session", this.toCookie(), {
-      expires: this.expiresAt,
+      expires: this.exp,
       httpOnly: true,
       sameSite: "strict"
     });
@@ -114,12 +100,11 @@ export class Session {
       delete data.user;
     }
     delete data.token;
-    // Tokenify data using jwt before
-    return btoa(JSON.stringify(data));
+    return generateToken(data);
   }
 
   refresh() {
-    this.expiresAt = this.getExpiresAt();
+    this.exp = this.getExpiresAt();
   }
 
   invalidate() {

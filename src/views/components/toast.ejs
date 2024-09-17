@@ -1,0 +1,47 @@
+<% 
+    var title = title || '';
+    var message = message || '';
+    var type = type || '';
+    var className = className || '';
+%>
+
+<div id="toast" hx-swap-oob="outerHTML" class="<%-className%> fixed bottom-4 right-4 z-50 flex-col border border-gray-400 bg-gray-900 p-4 px-5 rounded-lg transition-all duration-500">
+    <button class="top-0 right-[4px] absolute" onclick="removeToast(this.parentElement)">✕</button>
+    <div class="flex gap-2">
+        <div id="emoji">
+            <% if(type === 'success') {%>
+                <%- include("../components/ui/success", {size:25}) %>
+            <% } else if(type === 'loading') {%>
+                <%- include("../components/ui/loading", {size:25}) %>
+            <% } else if(type === 'failed') {%>
+                <%- include("../components/ui/failed", {size:25}) %>
+            <% } %>
+        </div>
+        <p id="toast-paragraph"><%=message%></p>
+    </div>
+    <script>
+        function removeToast(){
+            const toast = document.querySelector('#toast');
+            if (toast.classList.contains('hidden')) return;
+            toast.classList.add("translate-x-full", "opacity-0");
+            setTimeout(()=>{
+                toast.classList.add('hidden');
+                toast.classList.remove("translate-x-full", "opacity-0");
+            }, 500)
+        }
+
+        function showToast(message){
+            const paragraph = document.getElementById('toast-paragraph');
+            const emoji = document.getElementById('emoji');
+            if (message) paragraph.innerText = message;
+            emoji.innerHTML = `<%- include('../components/ui/loading', {size: 35}) %>`;
+
+            const toast = document.querySelector('#toast');
+            toast.classList.remove('hidden');
+        }
+        setTimeout(()=>{
+            removeToast();
+        }, 4000)
+        
+    </script>
+</div>

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import type { InferSchemaType } from "mongoose";
-import type { Document } from "mongoose";
 
 const postSchema = new mongoose.Schema({
     title: {type:String, required:true},
@@ -21,8 +20,8 @@ postSchema.pre("validate", function(next){
     next();
 })
 
-export const postModel = mongoose.model("Post", postSchema);
-export type PostDocument = Document<unknown,{},InferSchemaType<typeof postSchema>>;
+export type PostDocument = InferSchemaType<typeof postSchema> & {_id: mongoose.Types.ObjectId};
+export const postModel = mongoose.model<PostDocument>("Post", postSchema);
 
 export const findWithoutDuplicates = async (ids: string[]):Promise<PostDocument[]> => {
     const mongooseIds = ids.map((id) => new mongoose.Types.ObjectId(id));
