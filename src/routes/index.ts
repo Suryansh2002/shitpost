@@ -3,13 +3,14 @@ import { postRouter } from "./posts";
 import { apiRouter } from "./api";
 
 import { injectSession, redirectIfAuthenticated } from "../middlewares/auth";
-import { injectHtmxRedirect } from "../middlewares/utils";
+import { injectHtmxRedirect, injectToasts } from "../middlewares/utils";
 
 import { findWithoutDuplicates } from "../models/post";
 
 const router = express.Router();
 router.use(injectSession);
 router.use(injectHtmxRedirect);
+router.use(injectToasts);
 
 router.get("/", async (req, res) => {
   const posts = await findWithoutDuplicates([]);

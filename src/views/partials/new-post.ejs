@@ -5,6 +5,8 @@
     }
 }) %>
 
+<%- include("../components/toast", {className:'hidden', swapOob:""})  %>
+
 <main class="mt-28 w-full flex items-center justify-center text-white" id="main">
     <script>
         function getElements(){
@@ -50,7 +52,7 @@
         }
     </script>
     <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-6">Submit Form</h2>
+        <h2 class="text-2xl font-bold mb-6">Submit Post</h2>
         <form hx-post="/api/posts/create" enctype="multipart/form-data" hx-on:htmx:before-request="showToast('Uploading Post...')" hx-swap="none">
             <div class="mb-4">
                 <label for="title" class="block text-sm font-medium text-gray-300 mb-1">Title</label>

@@ -1,3 +1,4 @@
+<%- include("../components/toast", {className:'hidden', swapOob:""})  %>
 <div class="h-screen w-full flex items-center justify-center" id="formholder">
     <style>
         .htmx-request #login-text{
@@ -6,14 +7,14 @@
     </style>
     <main class="lg:w-1/3 w-2/3 bg-gray-900 rounded-xl p-4 ">
         <h1 class="text-5xl font-semibold text-center py-6 text-zinc-100">Login</h1>
-        <form id="loginform" class="px-6" hx-post="/api/auth/login" hx-swap="none">
+        <form class="px-6" hx-post="/api/auth/login" hx-swap="none">
             <div class="my-5">
                 <label for="username" class="font-semibold text-sm">Username</label>
                 <input name="username" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2" >
             </div>
             <div class="my-5">
                 <label for="password" class="font-semibold text-sm">Password</label>
-                <input name="password" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
+                <input name="password" type="password" required class="block w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
             </div>
             <div class="flex justify-center my-7">
                 <button type="submit" class="rounded-lg bg-blue-600 hover:bg-blue-700 transition-[background-color] duration-500 md:px-24 px-12 py-2 font-semibold text-sm">

@@ -28,7 +28,6 @@ const fileFilter = (req: express.Request, file:Express.Multer.File, cb:multer.Fi
     }
 };
 
-
 const upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 5 }, fileFilter:fileFilter});
 
 router.post("/create", redirectIfNotAuthenticated, checkPostCooldown ,upload.single("image"), async(req, res) => {
@@ -38,9 +37,10 @@ router.post("/create", redirectIfNotAuthenticated, checkPostCooldown ,upload.sin
     const ip = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unkown";
     const { title, description } = req.body;
     const imageName = req.file?.filename;
+    const imageUrl = imageName ? '/uploads/' + imageName : '';
 
-    await postModel.create({title: title, content: description, ip: ip, user: req.session.user._id, imageUrl: '/uploads/' + imageName});
-    res.render("components/toast", {message: "Post created successfully"});
+    await postModel.create({title: title, content: description, ip: ip, user: req.session.user._id, imageUrl: imageUrl});
+    res.htmxRedirect("/");
 });
 
 export { router as postsApiRouter };

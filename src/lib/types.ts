@@ -7,6 +7,8 @@ declare global {
         }
         interface Response {
             htmxRedirect: (url: string) => void;
+            errorToast: (message: string) => void;
+            successToast: (message: string) => void;
         }
     }
 }

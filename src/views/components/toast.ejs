@@ -2,11 +2,17 @@
     var title = title || '';
     var message = message || '';
     var type = type || '';
-    var className = className || '';
+    var toastClass = Date.now().toString(36);
+    var className = (className || "")+ ` ${toastClass}`;
+    if (swapOob === undefined){
+        var swapOob = `hx-swap-oob="outerHTML"`;
+    } else {
+        var swapOob = swapOob;
+    }
 %>
 
-<div id="toast" hx-swap-oob="outerHTML" class="<%-className%> fixed bottom-4 right-4 z-50 flex-col border border-gray-400 bg-gray-900 p-4 px-5 rounded-lg transition-all duration-500">
-    <button class="top-0 right-[4px] absolute" onclick="removeToast(this.parentElement)">✕</button>
+<div id="toast" <%-swapOob %> class="fixed <%-className%> bottom-4 right-4 z-50 flex-col border border-gray-400 bg-gray-900 p-4 px-5 rounded-lg transition-all duration-500">
+    <button class="top-0 right-[4px] absolute" onclick="removeToast('<%=toastClass%>')">✕</button>
     <div class="flex gap-2">
         <div id="emoji">
             <% if(type === 'success') {%>
@@ -20,8 +26,9 @@
         <p id="toast-paragraph"><%=message%></p>
     </div>
     <script>
-        function removeToast(){
-            const toast = document.querySelector('#toast');
+        function removeToast(className){
+            const toast = document.querySelector(`.${className}`);
+            if (!toast) return;
             if (toast.classList.contains('hidden')) return;
             toast.classList.add("translate-x-full", "opacity-0");
             setTimeout(()=>{
@@ -40,7 +47,7 @@
             toast.classList.remove('hidden');
         }
         setTimeout(()=>{
-            removeToast();
+            removeToast('<%=toastClass%>');
         }, 4000)
         
     </script>

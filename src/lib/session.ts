@@ -6,20 +6,24 @@ export class Session {
   user?: UserDocument | null;
   token?: string;
   exp: Date;
+  validationUsername?: string;
   private invalidated: boolean = false;
 
   constructor({
     expiresAt: exp,
     user,
     token,
+    validationUsername,
   }: {
     expiresAt?: Date;
     user?: any;
     token?: string;
+    validationUsername?: string;
   } = {}) {
     this.user = user;
     this.token = token;
     this.exp = this.getExpiresAt(exp);
+    this.validationUsername = validationUsername;
   }
 
   private getExpiresAt(expiresAt?: Date) {
@@ -87,7 +91,7 @@ export class Session {
     res.cookie("session", this.toCookie(), {
       expires: this.exp,
       httpOnly: true,
-      sameSite: "strict"
+      // sameSite: "strict"
     });
   }
 
@@ -103,7 +107,7 @@ export class Session {
     return generateToken(data);
   }
 
-  refresh() {
+  refreshExpiry() {
     this.exp = this.getExpiresAt();
   }
 
