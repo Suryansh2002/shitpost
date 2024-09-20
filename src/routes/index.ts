@@ -17,6 +17,7 @@ router.get("/", async (req, res) => {
   res.render("home", {
     posts: posts,
     postIds: JSON.stringify(posts.map((post) => post._id)),
+    user: req.session?.user,
   });
 });
 
@@ -30,7 +31,7 @@ router.get("/login", redirectIfAuthenticated, (req, res) => {
 
 router.get("/signup", redirectIfAuthenticated, (req, res) => {
   if (req.headers["hx-request"]){
-    res.render("partials/signup");
+    res.render("components/signup");
   } else {
     res.redirect("/login");
   }

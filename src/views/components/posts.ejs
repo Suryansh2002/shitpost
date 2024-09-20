@@ -9,16 +9,16 @@
         <%   hx-on:htmx:after-request="newPostHandler(event)" %>
         <% ` %>
     <% } %>
-    <div class="bg-zinc-900 border-[1.5px] border-zinc-300 rounded-lg p-4 sm:max-w-[30%] max-w-[90%]" <%-htmxAttributes%>>
+    <div class="bg-zinc-900 border-[1.5px] border-zinc-300 rounded-lg p-4 pb-3 sm:max-w-[30%] max-w-[90%] min-w-[250px] flex flex-col" <%-htmxAttributes%>>
+        <div class="text-sm text-slate-200 rounded-xl bg-zinc-900 max-w-fit p-2 border-2 border-slate-600">
+            Posted by<span class="font-medium">: <%= post.user.username %></span>
+        </div>
         <h1 class="text-xl my-2"><%= post.title %></h1>
         <hr class="w-full">
-        <p class="my-3 break-words max-w-[90%]"><%= post.content %></p>
+        <p class="my-3 break-words max-w-[90%] flex-1"><%= post.content %></p>
         <% if (post.imageUrl){ %>
-            <img src="<%= post.imageUrl %>" alt="<%= post.title %>" class="my-1 rounded-lg max-w-full min-w-[70%] max-h-96 object-fit">
+            <img src="<%= post.imageUrl %>" alt="<%= post.title %>" class="my-1 rounded-lg max-w-full min-w-[70%] max-h-96 object-fit ">
         <% } %>
-        <!-- <div class="w-full h-10 flex justify-around items-end mt-4">
-            <button class="text-3xl rounded-full hover:bg-zinc-700 p-1">👍</button>
-            <button class="text-3xl rounded-full hover:bg-zinc-700 p-1">👎</button>
-        </div> -->
+        <%- include("../components/post-actions", {post, user}) %>
     </div>
 <% }) %>

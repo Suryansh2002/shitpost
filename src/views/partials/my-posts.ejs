@@ -4,6 +4,7 @@
         label: "New Post"
     }
 }) %>
+<%- include("../components/toast", {className:'hidden', swapOob:""})  %>
 
 <script>
     /** @type {number[]} */
@@ -18,6 +19,6 @@
         );
     }
 </script>
-<main class="flex flex-wrap gap-4 justify-center" id="posts">
-    <%- include("../components/posts", {posts: posts}) %>
+<main class="flex flex-wrap gap-4 p-4 justify-center" id="posts">
+    <%- include("../components/posts", {posts: posts, user: user}) %>
 </main>

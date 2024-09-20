@@ -1,5 +1,5 @@
 <div class="p-2">
-    <nav class="w-full flex justify-between p-4 bg-gradient-to-r from-slate-950 to-gray-900 border-2 border-gray-500 rounded-2xl text-gray-100">
+    <nav class="w-full flex justify-between md:p-4 p-3 bg-gradient-to-r from-slate-950 to-gray-900 border-2 border-gray-500 rounded-2xl text-gray-100">
         <h1 class="text-3xl font-medium text-gray-100">Shit Post</h1>
         <div class="flex lg:gap-3 md:gap-2 gap-1">
             <a class="border-2 border-blue-500 hover:bg-blue-500 text-sm font-medium
@@ -11,7 +11,7 @@
                 <%= toggle.label  %>
             </a>
             <button class="border-2 border-red-500 hover:bg-red-500 text-sm font-medium
-                p-2 rounded-lg hover:scale-110 transition-all duration-300" hx-post="/api/auth/logout" hx-swap="none">Logout</button>
+                p-2 rounded-lg hover:scale-110 transition-all duration-300" hx-post="/api/auth/logout" hx-target="body">Logout</button>
         </div>
     </nav>
 </div>

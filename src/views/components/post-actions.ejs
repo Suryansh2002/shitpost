@@ -1,0 +1,5 @@
+<div class="w-full h-10 flex justify-around items-end mt-4" id="post-action-<%=post._id%>">
+    <%- include("../components/ui/like", {post, user}) %>
+    <%- include("../components/ui/dislike", {post, user}) %>
+    <%- include("../components/ui/comment", {post, user}) %>
+</div>

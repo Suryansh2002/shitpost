@@ -12,8 +12,5 @@ export function checkPostCooldown(req:Request, res:Response, next:NextFunction){
             type: "failed",
         });
     }
-    req.session.user.lastUploaded = new Date();
-    // @ts-ignore
-    req.session.user.save();
     next();
 }

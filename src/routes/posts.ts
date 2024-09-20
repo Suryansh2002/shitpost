@@ -24,7 +24,11 @@ router.get("/my-posts", redirectIfNotAuthenticated, async (req, res) => {
     return res.status(401).json({message: "Unauthorized"});
   }
   const posts = await postModel.find({ user: req.session.user._id });
-  res.render("partials/my-posts", {posts: posts, postIds: JSON.stringify(posts.map((post) => post._id))});
+  res.render("partials/my-posts", {
+    posts: posts,
+    postIds: JSON.stringify(posts.map((post) => post._id)),
+    user: req.session.user,
+  });
 });
 
 router.get("/new", redirectIfNotAuthenticated, (req, res) => {

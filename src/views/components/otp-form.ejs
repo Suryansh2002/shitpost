@@ -3,8 +3,8 @@
         message: "OTP has been sent to your email",
         type: "success",
     }) %>
-    <main class="lg:w-1/3 w-2/3 bg-gray-900 rounded-xl p-4 px-10">
-        <h1 class="text-4xl font-semibold text-center py-6 text-zinc-100">Enter OTP</h1>
+    <main class="lg:w-1/3 w-2/3 bg-gray-900 rounded-xl py-6 px-10">
+        <h1 class="text-4xl font-semibold text-center pb-6 text-zinc-100">Enter OTP</h1>
         <form id="otpform" hx-post="/api/auth/verify-otp" class="flex justify-center gap-4" oninput="handleChange()" hx-swap="none">
             <input name="first" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" required 
             class=" w-16 h-16 text-center text-2xl py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-blue-600 focus:border-2">
@@ -18,7 +18,7 @@
     </main>
     <script>
         var inputs = document.querySelectorAll('input[type="text"]');
-
+        inputs[0].focus();
         function handleChange(){
             const inputs = document.querySelectorAll('input[type="text"]');
             const values = Array.from(inputs).map(input => input.value).join('');

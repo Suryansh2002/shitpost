@@ -50,9 +50,13 @@ router.post("/signup", redirectIfAuthenticated, async (req, res) => {
     return res.errorToast("Username can only contain letters, numbers and underscores");
   }
 
+  if (!/(?=.*[A-Za-z])(?=.*\d)/.test(password)) {
+    return res.errorToast("Password must contain at least one alphabet and one number");
+  }
+
   const existingUser = await userModel.findOne({ username }) || await userModel.findOne({ email });
   if (existingUser) {
-    return res.errorToast("Username already exists");
+    return res.errorToast("Username or Email already exists");
   }
   
   if (pendingValidations.has(username)) {
@@ -65,7 +69,7 @@ router.post("/signup", redirectIfAuthenticated, async (req, res) => {
     from: process.env.EMAIL_SENDER,
     to: email,
     subject: "Welcome to Shit Post !",
-    text: `Your one time password for signup is ${otp}.\nValid for 60 seconds !`,
+    text: `Your one time password for signup is ${otp}.\nValid for 3 minutes !`,
   });
 
   pendingValidations.set(username, {
@@ -86,20 +90,13 @@ router.post("/verify-otp", redirectIfAuthenticated, async (req, res) => {
     return res.errorToast("Please enable cookies and try again");
   }
   const myValidation = pendingValidations.get(req.session?.validationUsername || "");
-  await new Promise(resolve=>setTimeout(resolve,3000));
   const otp = Number(["first","second","third","fourth"].map((element)=>req.body[element]).join(""))
   if (!myValidation) {
-    return res.render("components/toast", {
-      message: "OTP expired",
-      type: "failed",
-    })
+    return res.errorToast("OTP expired")
   }
 
   if (myValidation.otp !== otp) {
-    return res.render("components/toast", {
-      message: "Invalid OTP",
-      type: "failed",
-    })
+    return res.errorToast("Invalid OTP")
   }
 
   const { username, password, email } = myValidation;
@@ -124,28 +121,18 @@ router.post("/login", redirectIfAuthenticated, async (req, res) => {
   };
 
   if (!username || !password) {
-    return res.render("components/toast", {
-      message: "Username and password are required",
-      type: "failed",
-    })
+    return res.errorToast("Username and password are required");
   }
 
   const user = await userModel.findOne({ username });
 
   if (!user) {
-    return res.render("components/toast", {
-      message: "User not found",
-      type: "failed",
-    }) 
+    return res.errorToast("User not found");
   }
 
-  const isPasswordValid = bcrypt.compare(password, user.password || "");
-
+  const isPasswordValid = await bcrypt.compare(password, user.password || "");
   if (!isPasswordValid) {
-    return res.render("components/toast", {
-      message: "Invalid password",
-      type: "failed",
-    })
+    return res.errorToast("Invalid password");
   }
 
   if (req.session) {

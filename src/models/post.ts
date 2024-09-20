@@ -7,8 +7,8 @@ const postSchema = new mongoose.Schema({
     imageUrl: {type:String, default:""},
     ip: {type:String, required:true},
     user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required:true},
-    likes: {type:Number, default:0},
-    dislikes: {type:Number, default:0},
+    likes: {type:[mongoose.Schema.Types.ObjectId], default:[]},
+    dislikes: {type:[mongoose.Schema.Types.ObjectId], default:[]},
     comments: {type:[{userId: String, content: String}], default:[]},
 });
 
@@ -25,5 +25,19 @@ export const postModel = mongoose.model<PostDocument>("Post", postSchema);
 
 export const findWithoutDuplicates = async (ids: string[]):Promise<PostDocument[]> => {
     const mongooseIds = ids.map((id) => new mongoose.Types.ObjectId(id));
-    return await postModel.aggregate([{ $match: { _id: { $nin: mongooseIds } } }, { $sample: { size: 20 } }]);
+    return await postModel.aggregate([
+      { $match: { _id: { $nin: mongooseIds } } },
+      { $sample: { size: 20 } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'user',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      }
+    ]);
 }

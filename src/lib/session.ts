@@ -81,7 +81,11 @@ export class Session {
     data.exp = date;
     data.token = cookie;
 
-    return new Session(data);
+    const session = new Session(data);
+    if (!session.isAuthenticated) {
+      session.invalidate();
+    }
+    return session;
   }
 
   private update(res: Response) {
@@ -112,6 +116,7 @@ export class Session {
   }
 
   invalidate() {
+    delete this.user;
     this.invalidated = true;
   }
 }
