@@ -1,5 +1,5 @@
 <div class="fixed top-0 left-0 h-screen w-screen overflow-hidden flex flex-col lg:items-end items-center backdrop-blur-sm lg:py-0 py-6" id="comment-section">
-    <div class="lg:w-1/2 md:w-2/3 w-[90%] h-full bg-zinc-900 flex flex-col lg:pr-2 rounded-xl">
+    <div class="lg:w-1/2 md:w-2/3 w-[90%] h-full bg-zinc-900 flex flex-col lg:pr-2 rounded-xl overflow-x-hidden">
         <div class="flex justify-between items-center p-4 border-2 border-gray-700 bg-gray-950 rounded-xl">
             <h1 class="text-xl font-semibold text-gray-200">Comments</h1>
             <button class="text-gray-200 font-medium border-2 border-gray-500 rounded-lg p-2 px-3 hover:border-red-500 hover:bg-red-600 hover:bg-opacity-20" 
@@ -10,15 +10,15 @@
                 <%- include("../../components/posts/single-comment", {comment}) %>
             <% }) %>
         </div>
-        <form hx-on:htmx:before-request="document.querySelector('#comment-input').value=''" 
-            class="flex gap-4 p-4 border-t-2 border-gray-600" 
+        <form hx-on:htmx:before-request="document.querySelector('#comment-input').value=''"
+            class="flex md:gap-3 gap-1 md:p-4 p-1 border-t-2 border-gray-600 " 
             hx-vals='{"postId":"<%=post._id%>"}'
             hx-post="/api/posts/comment"
             hx-target="#post-comments" 
             hx-swap="beforeend"
         >
             <input id="comment-input" type="text" name="content" class="flex-1 bg-zinc-950 p-2 px-4 rounded-xl border-2 border-gray-600 focus:outline-none focus:border-gray-100" placeholder="Write a comment...">
-            <button class="bg-red-600 bg-opacity-20 border-2 border-red-500 p-2 rounded-xl">Comment</button>
+            <button class="bg-red-600 bg-opacity-20 border-2 border-red-500 md:p-2 p-1 rounded-xl">Comment</button>
         </form>
     </div>
 </div>
