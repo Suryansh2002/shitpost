@@ -8,11 +8,11 @@ router.get("/more", async (req, res) => {
   const stringIds = JSON.parse(req.headers.postids as string || "[]") as string[];
   if (stringIds.length<1){
     res.set("postIds", "[]");
-    return res.render("components/posts", { posts: []});
+    return res.render("components/posts/posts", { posts: []});
   }
   const posts = await findWithoutDuplicates(stringIds);
   res.set("postIds", JSON.stringify(posts.map((post) => post._id)));
-  res.render("components/posts", { posts: posts});
+  res.render("components/posts/posts", { posts: posts});
 });
 
 
@@ -37,6 +37,15 @@ router.get("/new", redirectIfNotAuthenticated, (req, res) => {
   }
   return res.render("partials/new-post");
 });
+
+router.get("/comments", async(req,res)=>{
+  const post = await postModel.findById(req.query.postId);
+  if (!post){
+    return res.errorToast("Post not found");
+  }
+  await post.populate("comments.user");
+  res.render("components/posts/comments", {post:post});
+})
 
 
 export { router as postRouter };

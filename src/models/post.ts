@@ -9,7 +9,12 @@ const postSchema = new mongoose.Schema({
     user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required:true},
     likes: {type:[mongoose.Schema.Types.ObjectId], default:[]},
     dislikes: {type:[mongoose.Schema.Types.ObjectId], default:[]},
-    comments: {type:[{userId: String, content: String}], default:[]},
+    comments: {type:[
+      {
+        user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
+        content: String
+      }
+    ], default:[]},
 });
 
 postSchema.pre("validate", function(next){

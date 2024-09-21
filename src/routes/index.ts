@@ -31,7 +31,7 @@ router.get("/login", redirectIfAuthenticated, (req, res) => {
 
 router.get("/signup", redirectIfAuthenticated, (req, res) => {
   if (req.headers["hx-request"]){
-    res.render("components/signup");
+    res.render("components/auth/signup");
   } else {
     res.redirect("/login");
   }

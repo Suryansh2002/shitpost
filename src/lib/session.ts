@@ -83,7 +83,7 @@ export class Session {
 
     const session = new Session(data);
     if (!session.isAuthenticated) {
-      session.invalidate();
+      delete session.user;
     }
     return session;
   }

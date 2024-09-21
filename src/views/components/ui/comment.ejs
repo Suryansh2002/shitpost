@@ -10,7 +10,7 @@
 %>
 
 <button class="text-3xl rounded-full p-2 flex items-center group <%=buttonClassName%>" 
-     hx-post="/api/posts/comment" hx-vals='{"postId":"<%= post._id %>"}' hx-target="#post-action-<%=post._id%>" hx-swap="outerHTML">
+     hx-get="/posts/comments" hx-vals='{"postId":"<%= post._id %>"}' hx-target="body" hx-swap="beforeend">
     <svg width="<%=size%>" height="<%=size%>" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="#ffffff">
         <g id="SVGRepo_bgCarrier" stroke-width="0"/>
         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>

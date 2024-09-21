@@ -70,7 +70,7 @@ router.post("/like", async(req, res) => {
         post.dislikes = post.dislikes.filter((id) => id.toString() !== user._id.toString());
     }
     await post.save();
-    res.render("components/post-actions", { post,user:req.session.user});
+    res.render("components/posts/post-actions", { post,user:req.session.user});
 });
 
 router.post("/dislike", async(req, res) => {
@@ -93,7 +93,28 @@ router.post("/dislike", async(req, res) => {
         post.likes = post.likes.filter((id) => id.toString() !== user._id.toString());
     }
     await post.save();
-    res.render("components/post-actions", { post,user:req.session.user});
+    res.render("components/posts/post-actions", { post,user:req.session.user});
+});
+
+router.post("/comment", async(req, res) => {
+    if (!req.session?.user){
+        res.set("HX-Reswap", "none");
+        return res.errorToast("You need to be logged in to comment on a post");
+    }
+    const content = req.body.content?.trim();
+    const post = await postModel.findById(req.body.postId);
+    const user = req.session.user;
+    if (!post){
+        res.set("HX-Reswap", "none");
+        return res.errorToast("Post not found");
+    }
+    if (content.length<1){
+        res.set("HX-Reswap", "none");
+        return res.errorToast("Comment cannot be empty");
+    }
+    post.comments.push({content: req.body.content, user: user._id});
+    await post.save();
+    res.render("components/posts/single-comment", { comment: {content: req.body.content, user: user}});
 });
 
 export { router as postsApiRouter };

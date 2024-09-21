@@ -63,7 +63,10 @@ router.post("/signup", redirectIfAuthenticated, async (req, res) => {
     return res.errorToast("Username temporarily unavailable");
   }
 
-  const otp = Math.floor(1000 + Math.random() * 9000);
+  let otp:number;
+  do {
+    otp = Math.floor(1000 + Math.random() * 9000);
+  } while ([...pendingValidations.values()].some((validation) => validation.otp === otp));
 
   await transporter.sendMail({
     from: process.env.EMAIL_SENDER,
@@ -81,7 +84,7 @@ router.post("/signup", redirectIfAuthenticated, async (req, res) => {
   });
 
   req.session.validationUsername = username;
-  res.set("HX-Retarget","#formholder").set("HX-Reswap","outerHTML").render("components/otp-form");
+  res.set("HX-Retarget","#formholder").set("HX-Reswap","outerHTML").render("components/auth/otp-form");
 });
 
 router.post("/verify-otp", redirectIfAuthenticated, async (req, res) => {
@@ -90,13 +93,13 @@ router.post("/verify-otp", redirectIfAuthenticated, async (req, res) => {
     return res.errorToast("Please enable cookies and try again");
   }
   const myValidation = pendingValidations.get(req.session?.validationUsername || "");
-  const otp = Number(["first","second","third","fourth"].map((element)=>req.body[element]).join(""))
+  const otp = Number(["first","second","third","fourth"].map((element)=>req.body[element]).join(""));
   if (!myValidation) {
-    return res.errorToast("OTP expired")
+    return res.errorToast("OTP expired");
   }
 
   if (myValidation.otp !== otp) {
-    return res.errorToast("Invalid OTP")
+    return res.errorToast("Invalid OTP");
   }
 
   const { username, password, email } = myValidation;
@@ -110,7 +113,7 @@ router.post("/verify-otp", redirectIfAuthenticated, async (req, res) => {
   delete req.session.validationUsername;
   req.session.refreshExpiry();
 
-  res.htmxRedirect("/posts/new");
+  res.htmxRedirect("/");
 });
 
 
