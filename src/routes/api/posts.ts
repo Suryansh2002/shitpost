@@ -117,4 +117,22 @@ router.post("/comment", async(req, res) => {
     res.render("components/posts/single-comment", { comment: {content: req.body.content, user: user}});
 });
 
+router.delete("/delete", redirectIfNotAuthenticated, async (req, res) => {
+    const post = await postModel.findById(req.query.postId);
+    if (!post){
+        res.set("hx-Reswap", "none");
+        return res.errorToast("Post not found");
+    }
+    if (!req.session?.user){
+        res.set("hx-Reswap", "none");
+        return res.errorToast("You need to be logged in to delete a post");
+    }
+    if (post.user.toString() !== req.session.user._id.toString()){
+        res.set("hx-Reswap", "none");
+        return res.errorToast("You can only delete your own posts");
+    }
+    await postModel.findByIdAndDelete(req.query.postId);
+    res.successToast("Post deleted successfully");
+});
+
 export { router as postsApiRouter };

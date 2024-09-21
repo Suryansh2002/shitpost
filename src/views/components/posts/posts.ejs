@@ -1,3 +1,7 @@
+<% 
+    var showDelete = showDelete || false;
+%>
+
 <% posts.forEach((post,index) => { %>
     <% if (index==posts.length-2) { %>
         <%   var htmxAttributes = ` %>
@@ -22,9 +26,22 @@
             }
         }
     %>
-    <div class="<%=maxHeight%> bg-zinc-900 border-[1.5px] border-zinc-300 rounded-lg p-4 pb-3 sm:max-w-[30%] max-w-[90%] min-w-[250px] flex flex-col" <%-htmxAttributes%>>
-        <div class="text-sm text-slate-200 rounded-xl bg-zinc-900 max-w-fit p-2 border-2 border-slate-600">
-            Posted by<span class="font-medium">: <%= post.user.username %></span>
+    <div id="post-<%-post._id%>" class="<%=maxHeight%> bg-zinc-900 border-[1.5px] border-zinc-300 rounded-lg p-4 pb-3 sm:max-w-[30%] max-w-[90%] min-w-[250px] flex flex-col" <%-htmxAttributes%>>
+        <div class="flex justify-between">
+            <div class="text-sm text-slate-200 rounded-xl bg-zinc-900 max-w-fit p-2 border-2 border-slate-600">
+                Posted by<span class="font-medium">: <%= post.user.username %></span>
+            </div>
+            <% if (showDelete){ %>
+                <button class="hover:bg-red-400 hover:bg-opacity-20 p-2 rounded-full" 
+                        hx-delete="/api/posts/delete" 
+                        hx-vals='{"postId":"<%-post._id%>"}'
+                        hx-confirm="Are you sure about deleting the post?"
+                        hx-target="#post-<%-post._id%>"
+                        hx-swap="outerHTML"
+                    >
+                    <img src="/static/images/bin.svg" alt="delete" height="25" width="25">
+                </button>
+            <%} %>
         </div>
         <h1 class="text-xl my-2"><%= post.title %></h1>
         <hr class="w-full">

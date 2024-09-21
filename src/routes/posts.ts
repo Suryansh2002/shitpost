@@ -17,18 +17,23 @@ router.get("/more", async (req, res) => {
 
 
 router.get("/my-posts", redirectIfNotAuthenticated, async (req, res) => {
-  if (!req.headers["hx-request"]){
-    return res.render("my-posts");
-  }
   if (!req.session?.user){
-    return res.status(401).json({message: "Unauthorized"});
+    return res.errorToast("You need to be logged in to view your posts");
   }
   const posts = await postModel.find({ user: req.session.user._id });
-  res.render("partials/my-posts", {
+  for (const post of posts){
+    // @ts-ignore
+    post.user = req.session.user;
+  }
+  const data = {
     posts: posts,
-    postIds: JSON.stringify(posts.map((post) => post._id)),
     user: req.session.user,
-  });
+    postIds: JSON.stringify(posts.map((post) => post._id)),
+  }
+  if (!req.headers["hx-request"]){
+    return res.render("my-posts", data);
+  }
+  res.render("partials/my-posts", data);
 });
 
 router.get("/new", redirectIfNotAuthenticated, (req, res) => {
