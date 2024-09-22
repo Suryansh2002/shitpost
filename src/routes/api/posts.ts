@@ -149,6 +149,9 @@ router.delete("/delete", redirectIfNotAuthenticated, async (req, res) => {
         return res.errorToast("You can only delete your own posts");
     }
     await postModel.findByIdAndDelete(req.query.postId);
+    if (post.imageUrl){
+        await fs.unlink(path.join(__dirname, "../../public", post.imageUrl));
+    }
     res.successToast("Post deleted successfully");
 });
 
