@@ -47,7 +47,7 @@
         <hr class="w-full">
         <p class="my-3 break-words max-w-[90%] flex-1 overflow-y-auto no-scrollbar"><%= post.content %></p>
         <% if (post.imageUrl){ %>
-            <img src="<%= post.imageUrl %>" alt="<%= post.title %>" class="my-1 rounded-lg max-w-full min-w-[70%] max-h-96 object-contain">
+            <img src="<%= post.imageUrl %>" alt="<%= post.title %>" class="my-1 rounded-lg max-w-full min-w-[70%] max-h-96 object-contain" style="object-fit: contain;">
         <% } %>
         <%- include("../../components/posts/post-actions", {post, user}) %>
     </div>
