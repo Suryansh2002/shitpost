@@ -95,7 +95,7 @@ export class Session {
     res.cookie("session", this.toCookie(), {
       expires: this.exp,
       httpOnly: true,
-      // sameSite: "strict"
+      sameSite: "strict"
     });
   }
 
