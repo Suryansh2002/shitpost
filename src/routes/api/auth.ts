@@ -24,11 +24,12 @@ router.post("/signup", redirectIfAuthenticated, async (req, res) => {
     return res.errorToast("Please enable cookies and try again");
   }
 
-  const { username, password, email } = req.body as {
+  let { username, password, email } = req.body as {
     username?: string;
     password?: string;
     email?: string;
   };
+  [username, password, email] = [username?.trim(), password?.trim(), email?.trim()];
 
   if (!username || !password || !email) {
     return res.errorToast("Username, email and password are required");
@@ -118,10 +119,12 @@ router.post("/verify-otp", redirectIfAuthenticated, async (req, res) => {
 
 
 router.post("/login", redirectIfAuthenticated, async (req, res) => {
-  const { username, password } = req.body as {
+  let { username, password } = req.body as {
     username?: string;
     password?: string;
   };
+
+  [username, password] = [username?.trim(), password?.trim()];
 
   if (!username || !password) {
     return res.errorToast("Username and password are required");
