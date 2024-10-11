@@ -29,3 +29,22 @@ I have decided to keep things simple because I wanted to use htmx and do things 
   - Write comments on other's post, like, disklike
 
 Simple and Minimal 
+
+# Screenshots
+
+## Home 
+
+![Home](https://github.com/Suryansh2002/shitpost/blob/main/src/public/screenshots/posts.png?raw=true)
+
+## Login
+
+![Login](https://github.com/Suryansh2002/shitpost/blob/main/src/public/screenshots/login.png?raw=true)
+
+## Submit Post
+
+![Submit Post](https://github.com/Suryansh2002/shitpost/blob/main/src/public/screenshots/submit.png?raw=true)
+
+
+## Manage Post
+
+![Manage Post](https://github.com/Suryansh2002/shitpost/blob/main/src/public/screenshots/manage-posts.png?raw=true)
