@@ -5,6 +5,7 @@ const postSchema = new mongoose.Schema({
     title: {type:String, required:true},
     content: {type:String, default:""},
     imageUrl: {type:String, default:""},
+    ytShortId: {type:String, default:""},
     ip: {type:String, required:true},
     user: {type: mongoose.Schema.Types.ObjectId, ref: "User", required:true},
     likes: {type:[mongoose.Schema.Types.ObjectId], default:[]},
@@ -18,9 +19,9 @@ const postSchema = new mongoose.Schema({
 });
 
 postSchema.pre("validate", function(next){
-    if (!this.content && !this.imageUrl){
-        this.invalidate("content", "Content or ImageUrl is required !");
-        this.invalidate("imageUrl", "Description or ImageUrl is required !");
+    if (!this.content && !this.imageUrl && !this.ytShortId){
+        this.invalidate("content", "Content or ImageUrl or ShortsId is required !");
+        this.invalidate("imageUrl", "Description or ImageUrl or ShortsId is required !");
     }
     next();
 })

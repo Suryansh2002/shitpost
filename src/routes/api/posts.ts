@@ -6,6 +6,7 @@ import { promises as fs } from "fs";
 import { postModel } from "../../models/post";
 import { redirectIfNotAuthenticated } from "../../middlewares/auth";
 import { checkPostCooldown } from "../../middlewares/post";
+import { isValidShortsLink } from "../../lib/validation";
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ const upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 5 },
 
 async function uploadFile(file: Express.Multer.File){
     const hash = crypto.createHash("sha1");
+    // @ts-ignore
     hash.update(file.buffer);
     const filename = hash.digest("hex") + path.extname(file.originalname);
     try {
@@ -36,6 +38,7 @@ async function uploadFile(file: Express.Multer.File){
         await fs.mkdir(path.join(__dirname, "../../public/uploads"));
     }
     const filepath = path.join(__dirname, "../../public/uploads", filename);
+    // @ts-ignore
     await fs.writeFile(filepath, file.buffer);
     return filename;
 }
@@ -46,21 +49,47 @@ router.post("/create", redirectIfNotAuthenticated, checkPostCooldown ,upload.sin
         return res.status(401).json({message: "Unauthorized"});
     }
     const ip = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
-    const { title, description } = req.body;
+    const { title, description, shortslink } = req.body;
 
-    if (!(description || req.file)){
+    if (!(description || req.file || shortslink)){
         return res.errorToast("Atleast Description or Image is required")
     }
+    if (title.length < 3){
+        return res.errorToast("Title must be atleast 3 characters long");
+    }
+    if (req.file && shortslink){
+        return res.errorToast("Only upload an image or a youtube shorts link");
+    }
 
-    let fileName;
+    let fileName = '';
+    let ytShortId = '';
+
+    if (shortslink){
+        const shortResult = isValidShortsLink(shortslink);
+        if (!shortResult.videoId){
+            return res.errorToast("Invalid Youtube Shorts Link");
+        }
+        ytShortId = shortResult.videoId;
+    }
+
+    const result = await postModel.findOne({ytShortId: ytShortId})
+    if (result){
+        return res.errorToast("This Youtube Shorts link is already posted");
+    }
+
     if (req.file){
         fileName = await uploadFile(req.file);
-    } else {
-        fileName = '';
     }
     const imageUrl = fileName ? '/uploads/' + fileName : '';
 
-    await postModel.create({title: title, content: description, ip: ip, user: req.session.user._id, imageUrl: imageUrl});
+    await postModel.create({
+        title: title,
+        content: description,
+        ip: ip,
+        user: req.session.user._id,
+        imageUrl: imageUrl,
+        ytShortId: ytShortId
+    });
     req.session.user.lastUploaded = new Date();
     // @ts-ignore
     req.session.user.save();

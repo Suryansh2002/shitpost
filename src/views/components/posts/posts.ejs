@@ -15,7 +15,7 @@
     <% } %>
     <% 
         var maxHeight = "";
-        if (!post.imageUrl){
+        if (!post.imageUrl && !post.ytShortId) {
             var contentLength = post.content.length;
             if (contentLength > 500) {
                 maxHeight = "max-h-[700px]";
@@ -47,7 +47,11 @@
         <hr class="w-full">
         <p class="my-3 break-words max-w-[90%] flex-1 overflow-y-auto no-scrollbar whitespace-pre-wrap"><%= post.content %></p>
         <% if (post.imageUrl){ %>
-            <img src="<%= post.imageUrl %>" alt="<%= post.title %>" class="my-1 rounded-lg max-w-full min-w-[70%] max-h-96 object-contain" style="object-fit: contain;">
+            <img src="<%= post.imageUrl %>" alt="<%= post.title %>" class="my-1 rounded-lg max-w-full min-w-[70%] max-h-96" style="object-fit: contain;">
+        <% } else if (post.ytShortId){ %>
+            <div style="object-fit: contain;" class="h-96">
+                <iframe src="https://www.youtube.com/embed/<%= post.ytShortId %>" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+            </div>
         <% } %>
         <%- include("../../components/posts/post-actions", {post, user}) %>
     </div>
