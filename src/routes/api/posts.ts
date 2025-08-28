@@ -179,7 +179,11 @@ router.delete("/delete", redirectIfNotAuthenticated, async (req, res) => {
     }
     await postModel.findByIdAndDelete(req.query.postId);
     if (post.imageUrl){
-        await fs.unlink(path.join(__dirname, "../../public", post.imageUrl));
+        try{
+            await fs.unlink(path.join(__dirname, "../../public", post.imageUrl));
+        } catch (e){
+            console.log("Error deleting image file:", e);
+        }
     }
     res.successToast("Post deleted successfully");
 });
